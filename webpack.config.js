@@ -14,6 +14,8 @@ const LiveReloadPlugin = require('webpack-livereload-plugin')
 FIX FOR PHASER WEBPACK STUFF!!!!!!!
 */
 var path = require('path')
+var webpack = require('webpack')
+
 var phaserModule = path.join(__dirname, '/node_modules/phaser/')
 var phaser = path.join(phaserModule, 'build/custom/phaser-split.js'),
   pixi = path.join(phaserModule, 'build/custom/pixi.js'),
@@ -34,25 +36,24 @@ module.exports = {
     alias: {
       'phaser': phaser,
       'pixi.js': pixi,
-      'p2': p2
+      'p2': p2,
     }
   },
   module: {
+    loaders: [
+            { test: /pixi\.js/, loader: "script" },
+    ],
     rules: [{
       test: /jsx?$/,
       exclude: /(node_modules|bower_components)/,
       use: [{
-        loaders: [
-          'babel-loader',
-          {test: /pixi\.js/, loader: 'script'},
-          { test: /phaser-split\.js$/, loader: 'expose?Phaser' },
-          { test: /p2\.js/, loader: 'expose?p2' }
-        ],
+        loader: 'babel-loader',
         options: {
           presets: ['react', 'es2015', 'stage-2']
         }
       }]
-    }]
+    }
+    ]
   },
   plugins: devMode
     ? [new LiveReloadPlugin({appendScriptTag: true})]
